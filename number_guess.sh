@@ -28,6 +28,24 @@ else
   fi
   echo "Welcome, $USERNAME! It looks like this is your first time here."
 fi
-echo Guess the secret number between 1 and 1000:
+GAME $USER_ID $NAME
+}
+GAME() {
+RANDOM_NUMBER=$(( (RANDOM % 10) + 1 ))
+echo random: $RANDOM_NUMBER
+echo Guess the secret number between 1 and 10:
+read GUESS
+TRIES=1
+while [ "$GUESS" != "$RANDOM_NUMBER" ]; do
+  read GUESS
+  ((TRIES++))
+  if [ "$GUESS" -lt "$RANDOM_NUMBER" ]; then
+    $HI_LO="higer"
+  else
+    $HI_LO="lower"
+  fi
+  echo "It's $HI_LO than that, guess again: "
+done
+echo tries: $TRIES
 }
 MAIN

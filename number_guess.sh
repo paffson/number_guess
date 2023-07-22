@@ -31,12 +31,16 @@ fi
 GAME $USER_ID $NAME
 }
 GAME() {
-RANDOM_NUMBER=$(( (RANDOM % 10) + 1 ))
-echo random: $RANDOM_NUMBER
-echo Guess the secret number between 1 and 10:
+RANDOM_NUMBER=$(( (RANDOM % 1000) + 1 ))
+#echo random: $RANDOM_NUMBER
+echo Guess the secret number between 1 and 1000:
 read GUESS
 TRIES=1
 while [ $GUESS != $RANDOM_NUMBER ]; do
+  while [[ ! $GUESS =~ ^[0-9]+$ ]]; do
+    echo "That is not an integer, guess again:"
+    read GUESS
+  done
   #echo loop $TRIES
   if [[ $GUESS -lt $RANDOM_NUMBER ]]; then
     HI_LO="higher"
@@ -48,6 +52,11 @@ while [ $GUESS != $RANDOM_NUMBER ]; do
   read GUESS
   ((TRIES++))
 done
-echo tries: $TRIES
+echo You guessed it in $TRIES tries. The secret number was $RANDOM_NUMBER. Nice job!
+GAME_ID=$($PSQL "insert into games(user_id, guesses) values($USER_ID, $TRIES) returning game_id")
+if [ -z $GAME_ID ]; then
+  echo "Error: save the game. Exiting."
+  exit 1
+fi
 }
 MAIN
